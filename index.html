@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VideoSync</title>
+</head>
+<body>
+  <video id="the-video" width="100%" controls src="" ></video>
+  <p>Percentage: <span id="current-percentage">0%</span></p>
+  <p>Progress: <span id="current-progress">0</span>/<span id="duration">0</span>seconds</p>
+  <progress id="progress-bar" max="100" value="0" style="width: 100%; height: 2em;">0%</progress>
+  <script>
+ 
+    function numberOrZero(maybeNumber){
+     return Number.isNaN(maybeNumber) ? 0 : maybeNumber
+    }
+
+    function getVideoProgress(videoElement){
+      const {currentTime, duration} = videoElement;
+      const percentage = ((currentTime/duration) * 100)
+      return {percentage: numberOrZero(percentage), currentTime: numberOrZero(currentTime), duration: numberOrZero(duration)}
+    }
+
+    function updateProgress(percentageElement, progressElement, durationElement, videoElement, progressBar){
+      const {percentage, currentTime, duration} = getVideoProgress(videoElement)
+      
+      const percentageText = percentage.toFixed(0) + "%"
+      const progressText = currentTime.toFixed(0);
+      const durationText = duration.toFixed(0);
+      percentageElement.textContent = percentageText;
+      progressElement.textContent = progressText;
+      durationElement.textContent = durationText;
+      progressBar.value = percentage.toFixed(0);
+      progressBar.textContent = percentage.toFixed(0) + "%"
+    }
+
+    const percentageEl = document.querySelector("#current-percentage");
+    const progressEl = document.querySelector("#current-progress");
+    const durationEl = document.querySelector("#duration")
+    const videoEl = document.querySelector("#the-video");
+    const progressBar = document.querySelector("#progress-bar");
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const videoUrl = urlParams.get("videoUrl") ?? "";
+    videoEl.setAttribute("src", videoUrl)
+
+
+    videoEl.addEventListener("timeupdate", (event) => {
+      updateProgress(percentageEl, progressEl, durationEl, videoEl, progressBar)
+    });
+
+  </script>
+</body>
+</html>
